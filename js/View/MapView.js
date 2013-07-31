@@ -15,6 +15,7 @@ MapView.prototype.MapView = function(data) {
 		this.View();
 		this.holder = data.holder || document.body;
 		this.map = null;
+		this.markers = [];
 		this.currentMarker = null;
 		this.currentPopup = null;
 	}
@@ -37,9 +38,11 @@ MapView.prototype.fullScreen = function() {
 	return this;
 };
 MapView.prototype.marker = function(data, callback) {
-	this.currentMarker = this.map.addMarker(data);
-	this.push(MapView.EVENTS.marker);
-	(typeof callback === "function") && callback.call(this, this.currentMarker);
+	if (typeof data === "object") {
+		this.markers.push(this.currentMarker = this.map.addMarker(data));
+		this.push(MapView.EVENTS.marker);
+		(typeof callback === "function") && callback.call(this, this.currentMarker);
+	}
 	return this;
 };
 MapView.prototype.popup = function(data, callback) {
@@ -53,16 +56,18 @@ MapView.prototype.popup = function(data, callback) {
 	}
 	return this;
 };
-MapView.prototype.removePopup = function(callback) {
-	//this.currentMarker.unbindPopup(this.currentMarker._popup);
-	this.map.removePopup(this.currentPopup);
-	this.currentPopup = null;
+MapView.prototype.removePopup = function(popup, callback) {
+	this.map.removePopup(popup);
+	(this.currentPopup === popup) && (this.currentPopup = null);
 	return this;
 };
-MapView.prototype.removeMarker = function(callback) {
-	this.map.removeMarker(this.currentMarker);
-	this.currentMarker = null;
-	this.currentPopup = null;
+MapView.prototype.removeMarker = function(marker, callback) {
+	this.map.removeMarker(marker);
+	if (this.currentMarker === marker) {
+		this.currentMarker = null;
+		this.currentPopup = null;
+	}
+	(typeof callback === "function") && callback.call(this);
 	return this;
 };
 MapView.prototype.openPopup = function(popupOrMarker, callback) {

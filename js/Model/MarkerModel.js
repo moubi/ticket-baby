@@ -17,7 +17,8 @@ MarkerModel.prototype.data = [
 		iconUrl : "img/police.png", 
 		iconSize : [32, 37], 
 		iconAnchor : [16, 37], 
-		popupAnchor : [0, -40]
+		popupAnchor : [0, -40], 
+		draggable : true
 	}
 ];
 

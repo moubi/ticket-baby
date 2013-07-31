@@ -21,15 +21,35 @@ Controller.prototype.init = function() {
 			that.addDOMListener(_views.FormView.form, "click", that.submit); 					// Submit Login/Register form
 			that.addDOMListener(_views.ControllsView.constructor.NAV, "click", that.nav); 		// Buttons
 			that.addDOMListener(_views.ControllsView.constructor.TRAPS, "click", that.traps); 	// Select traps
-			
 			that.addDOMListener(document, "click", that.confirmTrap); 							// Confirm trap
 			
 			map.on("click", that.addMarker);
+			map.on("zoomend resize dragend", that.loadMarkers);
 		});
 	});
 };
+
 Controller.prototype.load = function(callback) {
 	_views.MapView.set(_models.MapModel.select("*")[0], callback);
+	this.loadMarkers();
+};
+Controller.prototype.loadMarkers = function() {
+	Controller.prototype.unloadMarkers();
+	var markers = _models.UserMarkersModel.select(function(row) { return _views.MapView.map.isVisible(row.latlng); }), i = markers.length;
+	while (i--) {
+		_views.MapView.marker(N.objectMerge(_models.MarkerModel.select(function(row) { return row.id === markers[i].mid; })[0], { latlng : markers[i].latlng, draggable : false }), function(marker) {
+			this.popup({ on : marker, content : this.constructor.POPUP.overview }, function(popup) {
+				this.closePopup(popup);
+			});
+		});
+	}
+};
+Controller.prototype.unloadMarkers = function() {
+	var i = _views.MapView.markers.length;
+	while (i--) {
+		_views.MapView.removeMarker(_views.MapView.markers[i]);
+		_views.MapView.markers.splice(i, 1);
+	}
 };
 Controller.prototype.resize = function() {
 	_views.MapView.fullScreen();
@@ -89,10 +109,8 @@ Controller.prototype.submit = function(e) {
 };
 Controller.prototype.addMarker = function(e) {
 	if (_views.ControllsView.marker !== null && _views.FormView.Session.get()) {
-		_views.MapView.marker(N.objectMerge(_models.MarkerModel.select("id = '" + _views.ControllsView.marker + "'")[0], { latlng : e.latlng }), function(marker) {
-			_views.MapView.popup({ on : marker, content : _views.MapView.constructor.POPUP.agreement }, function(popup) {
-				//marker.on("dragend", Controller.prototype.dragendMarker);
-			});
+		_views.MapView.marker(N.objectMerge(_models.MarkerModel.select(function(row) { return row.id == _views.ControllsView.marker; })[0], { latlng : e.latlng }), function(marker) {
+			this.popup({ on : marker, content : this.constructor.POPUP.agreement });
 		});
 	}
 };
@@ -110,12 +128,11 @@ Controller.prototype.confirmTrap = function(e) {
 				latlng : [_views.MapView.currentMarker._latlng.lat, _views.MapView.currentMarker._latlng.lng], 
 				status : _models.UserMarkersModel.constructor.STATUS.pending
 			});
-			_views.MapView.removePopup().popup({ on : _views.MapView.currentMarker, content : _views.MapView.constructor.POPUP.overview }, function(popup) {
+			_views.MapView.removePopup(_views.MapView.currentPopup).popup({ on : _views.MapView.currentMarker, content : _views.MapView.constructor.POPUP.overview }, function(popup) {
 				this.closePopup(popup);
 			});
 		} else if (attr === "no") {
-			//_views.MapView.currentMarker.off("dragend", Controller.prototype.dragendMarker);
-			_views.MapView.removeMarker();
+			_views.MapView.removeMarker(_views.MapView.currentMarker);
 		}
 	}
 };

@@ -81,17 +81,16 @@ Model.prototype.newId = function() {
  * @returns Object
  */
 Model.prototype.select = function(query) {
-	if (query === "*") {
+	if (query === "*" || typeof query === "undefined") {
 		this.get(this.constructor.TABLE);
 		this.push(Model.events.SELECT);
 		return this.data;
-	} else {
+		
+	} else if (typeof query === "function") {
 		this.get(this.constructor.TABLE);
 		var i = this.data.length, result = [];
 		while (i--) {
-			with (this.data[i]) {
-				(eval(query)) && result.push( this.data[i]);
-			}
+			query(this.data[i]) && result.push(this.data[i]);
 		}
 		this.push(Model.events.SELECT);
 		return this.data = result;

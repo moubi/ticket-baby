@@ -25,7 +25,7 @@ UsersModel.prototype.register = function(data) {
 	return this.insert(data);
 };
 UsersModel.prototype.checkLogin = function(data) {
-	this.select("email === '" + data.email + "' && " + "password === '" + data.password + "'");
+	this.select(function(row) { return row.email === data.email && row.password === data.password; });
 	return this.data.length > 0;
 };
 
