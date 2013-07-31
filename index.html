@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Traffic Tickets Service</title>
+		<meta charset="UTF-8" />
+		<meta name="keywords" content="traffic, tickets, maps, traffic tickets" />
+		<meta name="description" content="Traffic tickets map service" />
+		<meta name="author" content="Miroslav Nikolov (@moubi) - http://codehands.com" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		
+		<link rel="stylesheet" href="css/reused.css" />
+		<link rel="stylesheet" href="css/grid.css" />
+		<link rel="stylesheet" href="css/fonts.css" />
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.3/leaflet.css" />
+		<link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600'>
+	<!--[if lt IE 9]>
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.3/leaflet.ie.css" />
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+		<script src="http://cdn.leafletjs.com/leaflet-0.6.3/leaflet.js"></script>
+	</head>
+	<body>
+		<section id="controls">
+			<div>
+				<h1 class="left">Traffic tickets</h1>
+				<span class="links right">
+					<a id="loginButton" href="javascript:;" title="Login">Login</a> | 
+					<a id="registerButton" href="javascript:;" title="Register">Register</a>
+				</span>
+				<div class="clear"></div>
+				<div id="login" class="form center"></div>
+				<nav>
+					<div id="trapsButton" data-misc="button">Traps</div>
+				</nav>
+				<section id="traps"></section>
+			</div>
+		</section>
+		<section id="map"></section>
+		<script id="needle" src="js/needlejs/core/Needle.js"></script>	
+		<script>
+			N.require("Sizzle.js");
+			N.require("DOM.js");
+			N.require("Events.js");
+			N.require("TemplateEngine.js");
+			N.require("js/needlejs/plugins/Publisher.js");
+			N.require("js/needlejs/plugins/Subscriber.js");
+			N.require("js/Model/Model.js");
+			N.require("js/Model/MapModel.js");
+			N.require("js/Model/MarkerModel.js");
+			N.require("js/Model/UsersModel.js");
+			N.require("js/Model/UserMarkersModel.js");
+			N.require("js/View/Templates.js");
+			N.require("js/View/Map.js");
+			N.require("js/View/View.js");
+			N.require("js/View/Session.js");
+			N.require("js/View/MapView.js");
+			N.require("js/View/FormView.js");
+			N.require("js/View/ControllsView.js");
+			N.require("js/Controller/Controller.js");
+			
+			N.onready(function() {
+				new N.plugins.Controller(
+					{ 
+						MapModel : new N.plugins.MapModel(), 
+						MarkerModel : new N.plugins.MarkerModel(),
+						UsersModel : new N.plugins.UsersModel(), 
+						UserMarkersModel : new N.plugins.UserMarkersModel()
+					}, 
+					{
+						MapView : new N.plugins.MapView({ holder : N.DOM("#map")[0] }), 
+						FormView : new N.plugins.FormView(N.DOM("#login")[0]), 
+						ControllsView : new N.plugins.ControllsView(N.DOM("#traps")[0])
+					}
+				).init();
+			});
+		</script>
+	</body>
+</html>
