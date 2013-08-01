@@ -79,4 +79,10 @@ h1 {
 	font-size: 12px;
 	line-height: 20px;
 }
+[data-misc~=button][data-misc~=large] {
+	font-size: 14px;
+	line-height: 36px;
+	font-weight: 600;
+	text-transform: uppercase;
+}
 /* /MISC */

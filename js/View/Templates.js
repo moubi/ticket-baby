@@ -62,7 +62,10 @@ overview_popup : {
 		'<div>'+
 			'<ul class="users">' +
 				'<li>username <em>(31.07.2013)</em></li>' + 
-			'</ul>' + 
+			'</ul>' +
+			'<div data-misc="button large red" class="td arrow_down _2 right">Protest</div>' +
+			'<div data-misc="button large orange" class="td arrow_up _3 left">Agree</div>' +
+			'<div class="clear"></div>' + 
 		'</div>' + 
 	'</div>'
 }

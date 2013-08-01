@@ -136,7 +136,10 @@ nav { padding: 10px 0; }
 /* POPUP */
 .popup { }
 .popup [data-misc~=button] { margin-right: 5px; }
-.popup ul.users { list-style-type: none; }
+.popup ul.users { 
+	list-style-type: none;
+	margin: 15px 0; 
+}
 .popup ul.users li { 
 	display: block;
 	background: url(../img/pin.png) 0 0 no-repeat;
@@ -162,4 +165,11 @@ nav { padding: 10px 0; }
 	height: 20px;
 	padding: 0 10px;
 }
+[data-misc~=button][data-misc~=large] { height: 36px; }
+[data-misc~=button][data-misc~=large].arrow_up { background: url(../img/arrow_up.png) 10px 10px no-repeat; }
+[data-misc~=button][data-misc~=large].arrow_down { background: url(../img/arrow_down.png) 10px 10px no-repeat; }
+[data-misc~=button][data-misc~=large].arrow_up, 
+[data-misc~=button][data-misc~=large].arrow_down { padding-left: 30px; }
+[data-misc~=button][data-misc~=red] { background-color: #f82222 !important; }
+[data-misc~=button][data-misc~=orange] { background-color: #feb51e !important; }
 /* /MISC */

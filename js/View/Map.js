@@ -24,6 +24,9 @@ Map.prototype.removePopup = function(popup) {
 Map.prototype.removeMarker = function(popup) {
 	this.map.removeLayer(popup);
 };
+Map.prototype.pinMarker = function(marker) {
+	marker.dragging.disable();
+};
 Map.prototype.openPopup = function(popup) {
 	this.map.openPopup(popup);
 };

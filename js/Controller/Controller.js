@@ -23,8 +23,9 @@ Controller.prototype.init = function() {
 			that.addDOMListener(_views.ControllsView.constructor.TRAPS, "click", that.traps); 	// Select traps
 			that.addDOMListener(document, "click", that.confirmTrap); 							// Confirm trap
 			
-			map.on("click", that.addMarker);
-			map.on("zoomend resize dragend", that.loadMarkers);
+			map.on("click", that.addMarker);													// Add trap (marker)
+			map.on("zoomend resize dragend", that.loadMarkers);									// Show traps
+			map.on("load", that.loadMarkers);													// Show traps
 		});
 	});
 };
@@ -35,20 +36,43 @@ Controller.prototype.load = function(callback) {
 };
 Controller.prototype.loadMarkers = function() {
 	Controller.prototype.unloadMarkers();
-	var markers = _models.UserMarkersModel.select(function(row) { return _views.MapView.map.isVisible(row.latlng); }), i = markers.length;
-	while (i--) {
-		_views.MapView.marker(N.objectMerge(_models.MarkerModel.select(function(row) { return row.id === markers[i].mid; })[0], { latlng : markers[i].latlng, draggable : false }), function(marker) {
-			this.popup({ on : marker, content : this.constructor.POPUP.overview }, function(popup) {
-				this.closePopup(popup);
+	var markers = _models.UserMarkersModel.select(function(row) { return _views.MapView.map.isVisible(row.latlng); }), i = markers.length, 
+		currentMarkers = _views.MapView.markers.slice(0), j = currentMarkers.length, diff = false;
+	// TODO Needs optimizing
+	if (j == 0) {
+		while (i--) {
+			_views.MapView.marker(N.objectMerge(_models.MarkerModel.select(function(row) { return row.id === markers[i].mid; })[0], { latlng : markers[i].latlng, draggable : false }), function(marker) {
+				this.popup({ on : marker, content : this.constructor.POPUP.overview }, function(popup) {
+					this.closePopup(popup);
+				});
 			});
-		});
+		}
+	} else {
+		while (i--) {
+			while (j--) {
+				(currentMarkers[j]._latlng.lat == markers[i].latlng[0] && currentMarkers[j]._latlng.lng == markers[i].latlng[1]) && (diff = true);
+			}
+			if (!diff) {
+				_views.MapView.marker(N.objectMerge(_models.MarkerModel.select(function(row) { return row.id === markers[i].mid; })[0], { latlng : markers[i].latlng, draggable : false }), function(marker) {
+					this.popup({ on : marker, content : this.constructor.POPUP.overview }, function(popup) {
+						this.closePopup(popup);
+					});
+				});
+			}
+			j = currentMarkers.length; diff = false;
+		}
 	}
 };
 Controller.prototype.unloadMarkers = function() {
-	var i = _views.MapView.markers.length;
-	while (i--) {
-		_views.MapView.removeMarker(_views.MapView.markers[i]);
-		_views.MapView.markers.splice(i, 1);
+	if (_views.MapView.markers.length > 0) {
+		var markers = _views.MapView.markers, buffer = markers.slice(0), i = markers.length;
+		while (i--) {
+			if (!_views.MapView.map.isVisible([markers[i]._latlng.lat, markers[i]._latlng.lng])) {
+				_views.MapView.removeMarker(markers[i]);
+				buffer.splice(i, 1);
+			}
+		}
+		_views.MapView.markers = buffer;
 	}
 };
 Controller.prototype.resize = function() {
@@ -129,6 +153,7 @@ Controller.prototype.confirmTrap = function(e) {
 				status : _models.UserMarkersModel.constructor.STATUS.pending
 			});
 			_views.MapView.removePopup(_views.MapView.currentPopup).popup({ on : _views.MapView.currentMarker, content : _views.MapView.constructor.POPUP.overview }, function(popup) {
+				this.map.pinMarker(_views.MapView.currentMarker);
 				this.closePopup(popup);
 			});
 		} else if (attr === "no") {
