@@ -28,6 +28,9 @@ UsersModel.prototype.checkLogin = function(data) {
 	this.select(function(row) { return row.email === data.email && row.password === data.password; });
 	return this.data.length > 0;
 };
+UsersModel.prototype.user = function(id) {
+	return this.select(function(row) { return row.id === id; })[0];
+};
 
 return UsersModel;
 });

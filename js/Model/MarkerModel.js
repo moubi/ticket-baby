@@ -21,6 +21,9 @@ MarkerModel.prototype.data = [
 		draggable : true
 	}
 ];
+MarkerModel.prototype.marker = function(id) {
+	return this.select(function(row) { return row.id === id; })[0];
+};
 
 return MarkerModel;
 });

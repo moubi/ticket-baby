@@ -49,6 +49,7 @@
 			N.require("js/Model/MarkerModel.js");
 			N.require("js/Model/UsersModel.js");
 			N.require("js/Model/UserMarkersModel.js");
+			N.require("js/Model/MarkersVotesModel.js");
 			N.require("js/View/Templates.js");
 			N.require("js/View/Map.js");
 			N.require("js/View/View.js");
@@ -64,7 +65,8 @@
 						MapModel : new N.plugins.MapModel(), 
 						MarkerModel : new N.plugins.MarkerModel(),
 						UsersModel : new N.plugins.UsersModel(), 
-						UserMarkersModel : new N.plugins.UserMarkersModel()
+						UserMarkersModel : new N.plugins.UserMarkersModel(), 
+						MarkersVotesModel : new N.plugins.MarkersVotesModel()
 					}, 
 					{
 						MapView : new N.plugins.MapView({ holder : N.DOM("#map")[0] }), 

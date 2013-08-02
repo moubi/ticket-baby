@@ -61,10 +61,10 @@ overview_popup : {
 		'<h2>Speed trap</h2>' +  
 		'<div>'+
 			'<ul class="users">' +
-				'<li>username <em>(31.07.2013)</em></li>' + 
+				'<li>{?data.first_name?} {?data.last_name?} <em>({?data.date?})</em></li>' + 
 			'</ul>' +
-			'<div data-misc="button large red" class="td arrow_down _2 right">Protest</div>' +
-			'<div data-misc="button large orange" class="td arrow_up _3 left">Agree</div>' +
+			'<div data-value="protest" data-misc="button large red" class="td arrow_down _2 right">Protest</div>' +
+			'<div data-value="agree" data-misc="button large orange" class="td arrow_up _3 left">Agree</div>' +
 			'<div class="clear"></div>' + 
 		'</div>' + 
 	'</div>'

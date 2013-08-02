@@ -48,9 +48,9 @@ MapView.prototype.marker = function(data, callback) {
 MapView.prototype.popup = function(data, callback) {
 	if (typeof data === "object") {
 		var that = this;
-		MapView.engine.assign("type", data.content);
-		MapView.engine.fetch(MapView.templates[data.content], function(result) {
-			that.currentPopup = that.map.addPopup(result, data.on);
+		MapView.engine.assign("type", data.template).assign("data", data.templateVars);
+		MapView.engine.fetch(MapView.templates[data.template], function(result) {
+			that.currentPopup = that.map.addPopup(result, data.marker);
 			(typeof callback === "function") && callback.call(that, that.currentPopup);
 		});
 	}

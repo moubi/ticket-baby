@@ -9,7 +9,6 @@ function UserMarkersModel() {
 }
 UserMarkersModel.prototype.UserMarkersModel = function() {
 	this.Model();
-	//this.store(UserMarkersModel.TABLE);
 };
 
 return UserMarkersModel;
