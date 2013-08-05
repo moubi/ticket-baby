@@ -57,14 +57,14 @@ agreement_popup : {
 overview_popup : {
 	name : "overview_popup", 
 	value :
-	'<div class="popup _8" data-type="{?type?}">' + 
+	'<div class="popup _8" data-type="{?type?}" data-marker={?data.mid?}>' + 
 		'<h2>Speed trap</h2>' +  
 		'<div>'+
 			'<ul class="users">' +
 				'<li>{?data.first_name?} {?data.last_name?} <em>({?data.date?})</em></li>' + 
 			'</ul>' +
-			'<div data-value="protest" data-misc="button large red" class="td arrow_down _2 right">Protest</div>' +
-			'<div data-value="agree" data-misc="button large orange" class="td arrow_up _3 left">Agree</div>' +
+			'<div data-value="protest" data-misc="button large red" class="td arrow_down _3 right">Immobilized</div>' +
+			'<div data-value="agree" data-misc="button large orange" class="td arrow_up _2 left">Agree</div>' +
 			'<div class="clear"></div>' + 
 		'</div>' + 
 	'</div>'

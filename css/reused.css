@@ -172,4 +172,5 @@ nav { padding: 10px 0; }
 [data-misc~=button][data-misc~=large].arrow_down { padding-left: 30px; }
 [data-misc~=button][data-misc~=red] { background-color: #f82222 !important; }
 [data-misc~=button][data-misc~=orange] { background-color: #feb51e !important; }
+[data-misc~=button][data-misc~=green] { background-color: #10a667 !important; }
 /* /MISC */

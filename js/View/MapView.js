@@ -13,6 +13,7 @@ function MapView(data) {
 MapView.prototype.MapView = function(data) {
 	if (typeof data === "object") {
 		this.View();
+		this.config = data;
 		this.holder = data.holder || document.body;
 		this.map = null;
 		this.markers = [];
@@ -23,7 +24,7 @@ MapView.prototype.MapView = function(data) {
 MapView.prototype.set = function(data, callback) {
 	if (typeof data === "object") {
 		this.fullScreen();
-	    this.map = new N.plugins.Map(this.holder, data);
+	    this.map = new N.plugins.Map(this.holder, N.objectMerge({}, data, this.config));
 	    this.push(MapView.EVENTS.map);
 	    (typeof callback === "function") && callback.call(this, this.map.map);
 	}
@@ -87,6 +88,16 @@ MapView.prototype.closePopup = function(popupOrMarker, callback) {
 	}
 	(typeof callback === "function") && callback.call(this, popupOrMarker);
 	return this;
+};
+MapView.prototype.setCurrentPopup = function(popup) {
+	(popup instanceof this.map.Popup) && (this.currentPopup = popup);
+};
+MapView.prototype.getCurrentMarkerId = function() {
+	var markerId = N.DOM.getAttributes(N.DOM("." + MapView.POPUP_CLASS, this.currentPopup._container)[0], "data-marker");
+	return markerId || false;
+};
+MapView.prototype.agree = function(button) {
+	N.DOM.setAttributes(button, { "data-misc" : "button large green" });
 };
 
 return MapView;

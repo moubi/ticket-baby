@@ -28,6 +28,7 @@ Controller.prototype.init = function() {
 			map.on("load", that.loadMarkers);													// Show traps
 //			map.on("layeradd", that.layerAdded);
 //			map.on("layerremove", that.layerRemoved);
+			map.on("popupopen", that.openPopup);
 		});
 	});
 };
@@ -45,7 +46,7 @@ Controller.prototype.loadMarkers = function() {
 	if (j == 0) {
 		while (i--) {
 			_views.MapView.marker(N.objectMerge(_models.MarkerModel.marker(markers[i].mid), { latlng : markers[i].latlng, draggable : false }), function(marker) {
-				this.popup({ marker : marker, template : this.constructor.POPUP.overview, templateVars : N.objectMerge(_models.UsersModel.user(markers[i].uid), { date : markers[i].date }) }, function(popup) { 
+				this.popup({ marker : marker, template : this.constructor.POPUP.overview, templateVars : N.objectMerge(_models.UsersModel.user(markers[i].uid), { date : markers[i].date, mid : markers[i].id }) }, function(popup) { 
 					this.closePopup(popup); 
 				});
 			});
@@ -57,7 +58,7 @@ Controller.prototype.loadMarkers = function() {
 			}
 			if (!diff) {
 				_views.MapView.marker(N.objectMerge(_models.MarkerModel.marker(markers[i].mid), { latlng : markers[i].latlng, draggable : false }), function(marker) {
-					this.popup({ marker : marker, template : this.constructor.POPUP.overview, templateVars : N.objectMerge(_models.UsersModel.user(markers[i].uid), { date : markers[i].date }) }, function(popup) {
+					this.popup({ marker : marker, template : this.constructor.POPUP.overview, templateVars : N.objectMerge(_models.UsersModel.user(markers[i].uid), { date : markers[i].date, mid : markers[i].id }) }, function(popup) {
 						this.closePopup(popup);
 					});
 				});
@@ -146,13 +147,13 @@ Controller.prototype.dragendMarker = function(e) {
 };
 Controller.prototype.popupButton = function(e) {
 	var target = N.Events.getTarget(e);
-	if (target.parentNode.className.indexOf(_views.MapView.constructor.POPUP_CLASS) !== -1) {
+	if (_views.MapView.currentPopup && N.DOM.contains(_views.MapView.currentPopup._container, target)) {
 		var button = N.DOM.getAttributes(target, "data-value");
 		switch (button) {
 			case "yes" : { Controller.prototype.confirmTrap(); break; } 
-			case "no": { Controller.prototype.dismissTrap(); break; }
-			case "agree": { Controller.prototype.agree(); break; }
-			case "protest": { Controller.prototype.protest(); break; }
+			case "no" : { Controller.prototype.dismissTrap(); break; }
+			case "agree" : { Controller.prototype.agree(target); break; }
+			case "protest" : { Controller.prototype.protest(); break; }
 		}
 	}
 };
@@ -166,7 +167,7 @@ Controller.prototype.confirmTrap = function() {
 	});
 	if (markerData) {
 		_views.MapView.removePopup(_views.MapView.currentPopup);
-		_views.MapView.popup({ marker : _views.MapView.currentMarker, template : _views.MapView.constructor.POPUP.overview, templateVars : N.objectMerge(_views.ControllsView.Session.get(), { date : markerData.date }) }, function(popup) {
+		_views.MapView.popup({ marker : _views.MapView.currentMarker, template : _views.MapView.constructor.POPUP.overview, templateVars : N.objectMerge(_views.ControllsView.Session.get(), { date : markerData.date, mid : markerData.id }) }, function(popup) {
 			this.map.pinMarker(_views.MapView.currentMarker);
 			this.closePopup(popup);
 		});
@@ -175,11 +176,24 @@ Controller.prototype.confirmTrap = function() {
 Controller.prototype.dismissTrap = function() {
 	_views.MapView.removeMarker(_views.MapView.currentMarker);
 };
-Controller.prototype.agree = function() {
-	
+Controller.prototype.agree = function(button) {
+	if (_views.FormView.Session.get()) {
+		var markerId = _views.MapView.getCurrentMarkerId(), uid = _views.ControllsView.Session.getValue("id"); 
+		
+		// Check if this marker wasn't created by current user
+		if (!_models.UserMarkersModel.markerOwnedByUser(markerId, uid) && !_models.MarkersVotesModel.userVotedForMarker(uid, markerId)) {
+			var markerVotesData = _models.MarkersVotesModel.agree({ uid : uid, mid : markerId });
+			if (markerVotesData) {
+				_views.MapView.agree(button);
+			}
+		}
+	}
 };
 Controller.prototype.protest = function() {
 	
+};
+Controller.prototype.openPopup = function(e) {
+	_views.MapView.setCurrentPopup(e.popup);
 };
 //Controller.prototype.layerAdded = function(e) {
 //	if (e.layer) {
@@ -192,9 +206,7 @@ Controller.prototype.protest = function() {
 //	}
 //};
 //Controller.prototype.clickMarker = function(e) {
-//	if (e.target instanceof _views.MapView.map.Marker) {
-//		_views.MapView.currentMarker = e.target;
-//	}
+//	_views.MapView.setCurrentMarker(e.target);
 //};
 
 return Controller;

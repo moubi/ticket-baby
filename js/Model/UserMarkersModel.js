@@ -10,6 +10,9 @@ function UserMarkersModel() {
 UserMarkersModel.prototype.UserMarkersModel = function() {
 	this.Model();
 };
+UserMarkersModel.prototype.markerOwnedByUser = function(mid, uid) {
+	return this.select(function(row) { return row.id === mid; })[0].uid === uid;
+};
 
 return UserMarkersModel;
 });

@@ -36,7 +36,8 @@
 			</div>
 		</section>
 		<section id="map"></section>
-		<script id="needle" src="js/needlejs/core/Needle.js"></script>	
+		<script id="needle" src="js/needlejs/core/Needle.js"></script>
+		<script src="http://j.maxmind.com/app/geoip.js"></script>
 		<script>
 			N.require("Sizzle.js");
 			N.require("DOM.js");
@@ -69,7 +70,7 @@
 						MarkersVotesModel : new N.plugins.MarkersVotesModel()
 					}, 
 					{
-						MapView : new N.plugins.MapView({ holder : N.DOM("#map")[0] }), 
+						MapView : new N.plugins.MapView({ holder : N.DOM("#map")[0], center : [geoip_latitude(), geoip_longitude()] }), 
 						FormView : new N.plugins.FormView(N.DOM("#login")[0]), 
 						ControllsView : new N.plugins.ControllsView(N.DOM("#traps")[0])
 					}
