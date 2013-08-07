@@ -65,6 +65,13 @@ h1 {
 	color: #075a40;
 }
 .popup ul.users li em { font-style: italic; }
+.popup ul.menu li a {
+	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 14px;
+	line-height: 18px;
+	color: #1a1a1a;
+}
+.popup ul.menu li a.selected { text-decoration: none; }
 /* /POPUP */
 
 /* MISC */

@@ -80,17 +80,17 @@ Model.prototype.newId = function() {
  * 
  * @returns Object
  */
-Model.prototype.select = function(query) {
+Model.prototype.select = function(query, table) {
 	if (query === "*" || typeof query === "undefined") {
-		this.get(this.constructor.TABLE);
+		this.get(table || this.constructor.TABLE);
 		this.push(Model.events.SELECT);
 		return this.data;
 		
 	} else if (typeof query === "function") {
-		this.get(this.constructor.TABLE);
-		var i = this.data.length, result = [];
+		this.get(table || this.constructor.TABLE);
+		var data = this.data.slice(0), i = data.length, result = [];
 		while (i--) {
-			query(this.data[i]) && result.push(this.data[i]);
+			query(data[i]) && result.push(data[i]);
 		}
 		this.push(Model.events.SELECT);
 		return this.data = result;

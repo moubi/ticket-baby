@@ -57,17 +57,41 @@ agreement_popup : {
 overview_popup : {
 	name : "overview_popup", 
 	value :
-	'<div class="popup _8" data-type="{?type?}" data-marker={?data.mid?}>' + 
+	'<div class="popup _8" data-type="{?type?}" data-marker={?data.marker.id?}>' + 
 		'<h2>Speed trap</h2>' +  
-		'<div>'+
+		'<div class="content">' +
 			'<ul class="users">' +
-				'<li>{?data.first_name?} {?data.last_name?} <em>({?data.date?})</em></li>' + 
+				'<li>{?data.first_name?} {?data.last_name?} <em>({?data.marker.date?})</em></li>' + 
 			'</ul>' +
 			'<div data-value="protest" data-misc="button large red" class="td arrow_down _3 right">Immobilized</div>' +
 			'<div data-value="agree" data-misc="button large orange" class="td arrow_up _2 left">Agree</div>' +
-			'<div class="clear"></div>' + 
+			'<div class="clear"></div>' +
 		'</div>' + 
+		'<ul class="menu">' +
+			'<li><a data-value="details" href="javascript:;" title="Details">Details</a></li>' +
+			'<li><a data-value="history" href="javascript:;" title="History">History</a></li>' + 
+		'</ul>' + 
 	'</div>'
+}, 
+trap_history : {
+	name : "trap_history", 
+	value :
+	'<ul class="users">' +
+		'<li>{?user.first_name?} {?user.last_name?} <em>({?user.date?})</em></li>' + 
+	'{? for (var i = 0; i < data.length; i++) { ?}' +
+		'<li class="vote_{?+data[i].vote?}">{?data[i].user.first_name?} {?data[i].user.last_name?} <em>({?data[i].date?})</em></li>' +
+	'{?}?}' +
+	'</ul>'
+}, 
+trap_details : {
+	name : "trap_details", 
+	value :
+	'<ul class="users">' +
+		'<li>{?user.first_name?} {?user.last_name?} <em>({?user.date?})</em></li>' + 
+	'</ul>' +
+	'<div data-value="protest" data-misc="button large red" class="td arrow_down _3 right">Immobilized</div>' +
+	'<div data-value="agree" data-misc="button large orange" class="td arrow_up _2 left">Agree</div>' +
+	'<div class="clear"></div>'
 }
 };
 });

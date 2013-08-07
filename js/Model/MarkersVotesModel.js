@@ -18,6 +18,13 @@ MarkersVotesModel.prototype.protest = function(data) {
 MarkersVotesModel.prototype.userVotedForMarker = function(uid, mid) {
 	return (this.select(function(row) { return row.uid === uid && row.mid === mid; }).length > 0) ? true : false;
 };
+MarkersVotesModel.prototype.markerHistory = function(mid) {
+	var markerVotes = this.select(function(row) { return row.mid === mid; }), i = markerVotes.length;
+	while (i--) {
+		markerVotes[i].user = this.select(function(row) { return row.id === markerVotes[i].uid; }, "users")[0];
+	}
+	return markerVotes;
+};
 
 return MarkersVotesModel;
 });

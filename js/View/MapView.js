@@ -1,9 +1,11 @@
 N.plug("MapView", function() {
 N.extend(MapView, N.plugins.View);
 
-MapView.EVENTS = { marker : "marker_add", fullscreen : "fullscreen", map : "map_created" };
-MapView.POPUP = { agreement : "agreement_popup", overview : "overview_popup" };
+MapView.EVENTS = { marker : "marker_add", fullscreen : "fullscreen", map : "map_created", agree : "agree", protest : "protest" };
+MapView.POPUP = { agreement : "agreement_popup", overview : "overview_popup", history : "trap_history", details : "trap_details" };
 MapView.POPUP_CLASS = "popup";
+MapView.POPUP_CONTENT_CLASS = "content";
+MapView.POPUP_SELECTED_TAB_CLASS = "selected";
 MapView.templates = N.plugins.Templates;
 MapView.engine = new N.TemplateEngine();
 
@@ -19,6 +21,7 @@ MapView.prototype.MapView = function(data) {
 		this.markers = [];
 		this.currentMarker = null;
 		this.currentPopup = null;
+		this.currentTab = null;
 	}
 };
 MapView.prototype.set = function(data, callback) {
@@ -97,7 +100,32 @@ MapView.prototype.getCurrentMarkerId = function() {
 	return markerId || false;
 };
 MapView.prototype.agree = function(button) {
-	N.DOM.setAttributes(button, { "data-misc" : "button large green" });
+	N.DOM.setAttributes(button, { "data-misc" : "button large gray" });
+	this.push(MapView.EVENTS.agree);
+};
+MapView.prototype.protest = function(button) {
+	N.DOM.setAttributes(button, { "data-misc" : "button large gray" });
+	this.push(MapView.EVENTS.protest);
+};
+MapView.prototype.trapHistory = function(user, data, button) {
+	var that = this;
+	MapView.engine.assign("user", user).assign("data", data);
+	MapView.engine.fetch(MapView.templates[MapView.POPUP.history], function(result) {
+		N.DOM("." + MapView.POPUP_CONTENT_CLASS, that.currentPopup._container)[0].innerHTML = result;
+		that.selectTab(button);
+	});
+};
+MapView.prototype.trapDetails = function(user, button) {
+	var that = this;
+	MapView.engine.assign("user", user);
+	MapView.engine.fetch(MapView.templates[MapView.POPUP.details], function(result) {
+		N.DOM("." + MapView.POPUP_CONTENT_CLASS, that.currentPopup._container)[0].innerHTML = result;
+		that.selectTab(button);
+	});
+};
+MapView.prototype.selectTab = function(tab) {
+	this.currentTab && (this.currentTab.className = "");
+	(this.currentTab = tab).className = MapView.POPUP_SELECTED_TAB_CLASS;
 };
 
 return MapView;

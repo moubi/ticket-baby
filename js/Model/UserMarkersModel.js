@@ -13,6 +13,10 @@ UserMarkersModel.prototype.UserMarkersModel = function() {
 UserMarkersModel.prototype.markerOwnedByUser = function(mid, uid) {
 	return this.select(function(row) { return row.id === mid; })[0].uid === uid;
 };
+UserMarkersModel.prototype.markerOwner = function(mid) {
+	var marker = this.select(function(row) { return row.id === mid; })[0];
+	return marker ? N.objectMerge(this.select(function(row) { return row.id === marker.uid; }, "users")[0], marker) : null;
+};
 
 return UserMarkersModel;
 });

@@ -26,8 +26,6 @@ Controller.prototype.init = function() {
 			map.on("click", that.addMarker);													// Add trap (marker)
 			map.on("zoomend resize dragend", that.loadMarkers);									// Show traps
 			map.on("load", that.loadMarkers);													// Show traps
-//			map.on("layeradd", that.layerAdded);
-//			map.on("layerremove", that.layerRemoved);
 			map.on("popupopen", that.openPopup);
 		});
 	});
@@ -46,7 +44,7 @@ Controller.prototype.loadMarkers = function() {
 	if (j == 0) {
 		while (i--) {
 			_views.MapView.marker(N.objectMerge(_models.MarkerModel.marker(markers[i].mid), { latlng : markers[i].latlng, draggable : false }), function(marker) {
-				this.popup({ marker : marker, template : this.constructor.POPUP.overview, templateVars : N.objectMerge(_models.UsersModel.user(markers[i].uid), { date : markers[i].date, mid : markers[i].id }) }, function(popup) { 
+				this.popup({ marker : marker, template : this.constructor.POPUP.overview, templateVars : N.objectMerge(_models.UsersModel.user(markers[i].uid), { marker : markers[i] }) }, function(popup) { 
 					this.closePopup(popup); 
 				});
 			});
@@ -58,7 +56,7 @@ Controller.prototype.loadMarkers = function() {
 			}
 			if (!diff) {
 				_views.MapView.marker(N.objectMerge(_models.MarkerModel.marker(markers[i].mid), { latlng : markers[i].latlng, draggable : false }), function(marker) {
-					this.popup({ marker : marker, template : this.constructor.POPUP.overview, templateVars : N.objectMerge(_models.UsersModel.user(markers[i].uid), { date : markers[i].date, mid : markers[i].id }) }, function(popup) {
+					this.popup({ marker : marker, template : this.constructor.POPUP.overview, templateVars : N.objectMerge(_models.UsersModel.user(markers[i].uid), { marker : markers[i] }) }, function(popup) {
 						this.closePopup(popup);
 					});
 				});
@@ -102,9 +100,7 @@ Controller.prototype.traps = function(e) {
 		if (_views.FormView.Session.get()) {
 			_views.ControllsView.selectMarker(target.parentNode, N.DOM.getAttributes(target, "data-type"));
 		} else {
-			_views.ControllsView.hide(function() {
-				_views.FormView.show(_views.FormView.constructor.EVENTS.login);
-			});
+			_views.ControllsView.hide(function() { _views.FormView.show(_views.FormView.constructor.EVENTS.login); });
 		}
 	}
 };
@@ -153,7 +149,9 @@ Controller.prototype.popupButton = function(e) {
 			case "yes" : { Controller.prototype.confirmTrap(); break; } 
 			case "no" : { Controller.prototype.dismissTrap(); break; }
 			case "agree" : { Controller.prototype.agree(target); break; }
-			case "protest" : { Controller.prototype.protest(); break; }
+			case "protest" : { Controller.prototype.protest(target); break; }
+			case "history" : { Controller.prototype.trapHistory(target); break; }
+			case "details" : { Controller.prototype.trapDetails(target); break; }
 		}
 	}
 };
@@ -167,7 +165,7 @@ Controller.prototype.confirmTrap = function() {
 	});
 	if (markerData) {
 		_views.MapView.removePopup(_views.MapView.currentPopup);
-		_views.MapView.popup({ marker : _views.MapView.currentMarker, template : _views.MapView.constructor.POPUP.overview, templateVars : N.objectMerge(_views.ControllsView.Session.get(), { date : markerData.date, mid : markerData.id }) }, function(popup) {
+		_views.MapView.popup({ marker : _views.MapView.currentMarker, template : _views.MapView.constructor.POPUP.overview, templateVars : N.objectMerge(_views.ControllsView.Session.get(), { marker : markerData }) }, function(popup) {
 			this.map.pinMarker(_views.MapView.currentMarker);
 			this.closePopup(popup);
 		});
@@ -183,31 +181,35 @@ Controller.prototype.agree = function(button) {
 		// Check if this marker wasn't created by current user
 		if (!_models.UserMarkersModel.markerOwnedByUser(markerId, uid) && !_models.MarkersVotesModel.userVotedForMarker(uid, markerId)) {
 			var markerVotesData = _models.MarkersVotesModel.agree({ uid : uid, mid : markerId });
-			if (markerVotesData) {
-				_views.MapView.agree(button);
-			}
+			markerVotesData && _views.MapView.agree(button);
 		}
+	} else {
+		_views.ControllsView.hide(function() { _views.FormView.show(_views.FormView.constructor.EVENTS.login); });
 	}
 };
-Controller.prototype.protest = function() {
-	
+Controller.prototype.protest = function(button) {
+	if (_views.FormView.Session.get()) {
+		var markerId = _views.MapView.getCurrentMarkerId(), uid = _views.ControllsView.Session.getValue("id"); 
+		
+		// Marker wasn't created by current user and user didn't perform voting on it yet
+		if (!_models.UserMarkersModel.markerOwnedByUser(markerId, uid) && !_models.MarkersVotesModel.userVotedForMarker(uid, markerId)) {
+			var markerVotesData = _models.MarkersVotesModel.protest({ uid : uid, mid : markerId });
+			markerVotesData && _views.MapView.protest(button);
+		}
+	} else {
+		_views.ControllsView.hide(function() { _views.FormView.show(_views.FormView.constructor.EVENTS.login); });
+	}
+};
+Controller.prototype.trapHistory = function(button) {
+	var markerId = _views.MapView.getCurrentMarkerId();
+	_views.MapView.trapHistory(_models.UserMarkersModel.markerOwner(markerId), _models.MarkersVotesModel.markerHistory(markerId), button);
+};
+Controller.prototype.trapDetails = function(button) {
+	_views.MapView.trapDetails(_models.UserMarkersModel.markerOwner(_views.MapView.getCurrentMarkerId()), button);
 };
 Controller.prototype.openPopup = function(e) {
 	_views.MapView.setCurrentPopup(e.popup);
 };
-//Controller.prototype.layerAdded = function(e) {
-//	if (e.layer) {
-//		(e.layer instanceof _views.MapView.map.Marker) && e.layer.on("click", Controller.prototype.clickMarker);
-//	}
-//};
-//Controller.prototype.layerRemoved = function(e) {
-//	if (e.layer) {
-//		(e.layer instanceof _views.MapView.map.Marker) && e.layer.off("click", Controller.prototype.clickMarker);
-//	}
-//};
-//Controller.prototype.clickMarker = function(e) {
-//	_views.MapView.setCurrentMarker(e.target);
-//};
 
 return Controller;
 });
