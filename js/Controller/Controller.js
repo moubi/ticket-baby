@@ -133,9 +133,11 @@ Controller.prototype.submit = function(e) {
 };
 Controller.prototype.addMarker = function(e) {
 	if (_views.ControllsView.marker !== null && _views.FormView.Session.get()) {
-		_views.MapView.marker(N.objectMerge(_models.MarkerModel.select(function(row) { return row.id == _views.ControllsView.marker; })[0], { latlng : e.latlng }), function(marker) {
-			this.popup({ marker : marker, template : this.constructor.POPUP.agreement });
-		});
+		if (_models.UserMarkersModel.isNewMarkerAllowed(_views.FormView.Session.getValue("id"))) {
+			_views.MapView.marker(N.objectMerge(_models.MarkerModel.select(function(row) { return row.id == _views.ControllsView.marker; })[0], { latlng : e.latlng }), function(marker) {
+				this.popup({ marker : marker, template : this.constructor.POPUP.agreement });
+			});
+		}
 	}
 };
 Controller.prototype.dragendMarker = function(e) {
@@ -201,6 +203,7 @@ Controller.prototype.protest = function(button) {
 	}
 };
 Controller.prototype.trapHistory = function(button) {
+	// TODO order trabs by date
 	var markerId = _views.MapView.getCurrentMarkerId();
 	_views.MapView.trapHistory(_models.UserMarkersModel.markerOwner(markerId), _models.MarkersVotesModel.markerHistory(markerId), button);
 };
