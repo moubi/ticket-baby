@@ -21,9 +21,10 @@ Controller.prototype.init = function() {
 			that.addDOMListener(_views.FormView.form, "click", that.submit); 					// Submit Login/Register form
 			that.addDOMListener(_views.ControllsView.constructor.NAV, "click", that.nav); 		// Buttons
 			that.addDOMListener(_views.ControllsView.constructor.TRAPS, "click", that.traps); 	// Select traps
-			that.addDOMListener(document, "click", that.popupButton); 							// Place/Dismiss/Agree/Protest trap
+			that.addDOMListener(document, "click", that.popupButton); 							// Place/Dismiss/Agree/Protest/Details/History
 			
 			map.on("click", that.addMarker);													// Add trap (marker)
+			// TODO Markers should become vector shapes when zooming out too much
 			map.on("zoomend resize dragend", that.loadMarkers);									// Show traps
 			map.on("load", that.loadMarkers);													// Show traps
 			map.on("popupopen", that.openPopup);
@@ -33,6 +34,11 @@ Controller.prototype.init = function() {
 
 Controller.prototype.load = function(callback) {
 	_views.MapView.set(_models.MapModel.select("*")[0], callback);
+//	if (navigator.geolocation) {
+//		navigator.geolocation.getCurrentPosition(function(position) {
+//			_views.MapView.map.map.panTo(new _views.MapView.map.LatLng(position.coords.latitude, position.coords.longitude));
+//		});
+//    }
 	this.loadMarkers();
 };
 Controller.prototype.loadMarkers = function() {
@@ -203,7 +209,7 @@ Controller.prototype.protest = function(button) {
 	}
 };
 Controller.prototype.trapHistory = function(button) {
-	// TODO order trabs by date
+	// TODO order traps by date
 	var markerId = _views.MapView.getCurrentMarkerId();
 	_views.MapView.trapHistory(_models.UserMarkersModel.markerOwner(markerId), _models.MarkersVotesModel.markerHistory(markerId), button);
 };
