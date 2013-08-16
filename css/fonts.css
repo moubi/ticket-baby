@@ -47,7 +47,7 @@ h1 {
 /* POPUP */
 .popup p {
 	font-family: 'Source Sans Pro', sans-serif;
-	font-size: 12px;
+	font-size: 14px;
 	line-height: 16px;
 	color: #075a40;
 }
@@ -83,8 +83,8 @@ h1 {
 	text-align: center;
 }
 [data-misc~=button][data-misc~=small] {
-	font-size: 12px;
-	line-height: 20px;
+	font-size: 14px;
+	line-height: 25px;
 }
 [data-misc~=button][data-misc~=large] {
 	font-size: 14px;

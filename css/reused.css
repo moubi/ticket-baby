@@ -170,7 +170,7 @@ nav { padding: 10px 0; }
 	cursor: pointer;
 }
 [data-misc~=button][data-misc~=small] {
-	height: 20px;
+	height: 25px;
 	padding: 0 10px;
 }
 [data-misc~=button][data-misc~=large] { height: 36px; }

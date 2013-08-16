@@ -50,8 +50,8 @@ agreement_popup : {
 	name : "agreement_popup", 
 	value :
 	'<div class="popup _7" data-type="{?type?}">' + 
-		'<p>Are you sure there is a valid trap on this location? Note that other people may protest that.</p>' + 
-		'<div data-value="yes" data-misc="button small">Yes</div><div data-value="no" data-misc="button small">No</div>' + 
+		'<p>Arey you sure this is a speed trap?</p>' + 
+		'<div data-value="yes" data-misc="button small">YES</div><div data-value="no" data-misc="button small red">NO</div>' + 
 	'</div>'
 }, 
 overview_popup : {
