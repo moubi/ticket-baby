@@ -5,6 +5,7 @@ function Map(element, data) {
 	if (typeof data === "object") {
 		this.map = new this.Map(element, { center : data.center, zoom : data.zoom, zoomControl : data.zoomControl });
 		this.tileLayer(data.tileURI, { attribution: data.attribution, maxZoom : data.maxZoom || 18 }).addTo(this.map);
+		new this.Control.Zoom({ position : "topright" }).addTo(this.map);
 	}
 }
 Map.prototype.addMarker = function(data) {
